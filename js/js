@@ -1,0 +1,310 @@
+/* products.js - Save this in the js folder */
+const products = [
+  {
+    id: 1,
+    name: "Premium Wireless Headphones",
+    price: 199.99,
+    category: "electronics",
+    rating: 4.5,
+    image: "images/headphones.jpg",
+    description:
+      "High-quality wireless headphones with noise cancellation and premium sound.",
+  },
+  {
+    id: 2,
+    name: "Smart Watch Series 5",
+    price: 299.99,
+    category: "electronics",
+    rating: 4.3,
+    image: "images/smartwatch.jpg",
+    description:
+      "Track your health and stay connected with this premium smartwatch.",
+  },
+  {
+    id: 3,
+    name: "Men's Casual T-Shirt",
+    price: 24.99,
+    category: "clothing",
+    rating: 4.0,
+    image: "images/tshirt.jpg",
+    description: "Comfortable cotton t-shirt perfect for casual wear.",
+  },
+  {
+    id: 4,
+    name: "Women's Running Shoes",
+    price: 89.99,
+    category: "clothing",
+    rating: 4.7,
+    image: "images/shoes.jpg",
+    description:
+      "Lightweight and breathable running shoes for maximum comfort.",
+  },
+  {
+    id: 5,
+    name: "Non-stick Cooking Set",
+    price: 149.99,
+    category: "home",
+    rating: 4.2,
+    image: "images/cookingset.jpg",
+    description:
+      "Complete non-stick cooking set with pots and pans for your kitchen.",
+  },
+  {
+    id: 6,
+    name: "Bestselling Novel",
+    price: 14.99,
+    category: "books",
+    rating: 4.8,
+    image: "images/book.jpg",
+    description: "The latest bestselling novel that everyone's talking about.",
+  },
+  {
+    id: 7,
+    name: "Laptop Stand",
+    price: 49.99,
+    category: "electronics",
+    rating: 4.4,
+    image: "images/laptopstand.jpg",
+    description: "Ergonomic laptop stand for better posture and comfort.",
+  },
+  {
+    id: 8,
+    name: "Smart Home Hub",
+    price: 129.99,
+    category: "electronics",
+    rating: 4.1,
+    image: "images/smarthome.jpg",
+    description: "Control all your smart devices with this central home hub.",
+  },
+];
+
+/* app.js - Save this in the js folder */
+// DOM Elements
+const productsGrid = document.getElementById("products-grid");
+const cartBtn = document.getElementById("cart-btn");
+const cartModal = document.getElementById("cart-modal");
+const closeBtn = document.querySelector(".close");
+const cartItems = document.getElementById("cart-items");
+const cartCount = document.getElementById("cart-count");
+const cartSubtotal = document.getElementById("cart-subtotal");
+const cartTotal = document.getElementById("cart-total");
+const checkoutBtn = document.getElementById("checkout-btn");
+const continueShoppingBtn = document.getElementById("continue-shopping");
+const searchInput = document.getElementById("search-input");
+const searchBtn = document.getElementById("search-btn");
+const priceRange = document.getElementById("price-range");
+const priceValue = document.getElementById("price-value");
+const applyFiltersBtn = document.getElementById("apply-filters");
+const categoryCheckboxes = document.querySelectorAll("input[data-category]");
+
+// State
+let cart = [];
+let filteredProducts = [...products];
+
+// Initialize
+function init() {
+  displayProducts(products);
+  updateCartCount();
+
+  // Event Listeners
+  cartBtn.addEventListener("click", openCart);
+  closeBtn.addEventListener("click", closeCart);
+  continueShoppingBtn.addEventListener("click", closeCart);
+  window.addEventListener("click", (e) => {
+    if (e.target === cartModal) closeCart();
+  });
+
+  checkoutBtn.addEventListener("click", checkout);
+  searchBtn.addEventListener("click", searchProducts);
+  searchInput.addEventListener("keyup", (e) => {
+    if (e.key === "Enter") searchProducts();
+  });
+
+  priceRange.addEventListener("input", updatePriceLabel);
+  applyFiltersBtn.addEventListener("click", applyFilters);
+}
+
+// Display Products
+function displayProducts(productsToDisplay) {
+  productsGrid.innerHTML = "";
+
+  if (productsToDisplay.length === 0) {
+    productsGrid.innerHTML =
+      '<p class="no-products">No products found matching your criteria.</p>';
+    return;
+  }
+
+  productsToDisplay.forEach((product) => {
+    const productCard = document.createElement("div");
+    productCard.classList.add("product-card");
+
+    productCard.innerHTML = `
+            <div class="product-image">
+                <img src="${product.image}" alt="${product.name}">
+            </div>
+            <div class="product-info">
+                <h4>${product.name}</h4>
+                <div class="product-price">$${product.price.toFixed(2)}</div>
+                <div class="product-rating">
+                    ${getStars(product.rating)}
+                </div>
+                <button class="add-to-cart" data-id="${
+                  product.id
+                }">Add to Cart</button>
+            </div>
+        `;
+
+    productsGrid.appendChild(productCard);
+  });
+
+  // Add to cart event listeners
+  document.querySelectorAll(".add-to-cart").forEach((button) => {
+    button.addEventListener("click", addToCart);
+  });
+}
+
+// Generate star rating
+function getStars(rating) {
+  const fullStar = '<i class="fas fa-star"></i>';
+  const halfStar = '<i class="fas fa-star-half-alt"></i>';
+  const emptyStar = '<i class="far fa-star"></i>';
+
+  let stars = "";
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
+
+  for (let i = 1; i <= 5; i++) {
+    if (i <= fullStars) {
+      stars += fullStar;
+    } else if (i === fullStars + 1 && hasHalfStar) {
+      stars += halfStar;
+    } else {
+      stars += emptyStar;
+    }
+  }
+
+  return stars;
+}
+
+// Add to Cart
+function addToCart(e) {
+  const productId = parseInt(e.target.dataset.id);
+  const product = products.find((item) => item.id === productId);
+
+  const existingItem = cart.find((item) => item.id === productId);
+
+  if (existingItem) {
+    existingItem.quantity += 1;
+  } else {
+    cart.push({
+      ...product,
+      quantity: 1,
+    });
+  }
+
+  updateCartCount();
+  showNotification(`${product.name} added to cart!`);
+}
+
+// Update Cart Count
+function updateCartCount() {
+  const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+  cartCount.textContent = totalItems;
+}
+
+// Show Notification
+function showNotification(message) {
+  const notification = document.createElement("div");
+  notification.classList.add("notification");
+  notification.textContent = message;
+
+  document.body.appendChild(notification);
+
+  setTimeout(() => {
+    notification.classList.add("show");
+  }, 10);
+
+  setTimeout(() => {
+    notification.classList.remove("show");
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 300);
+  }, 2000);
+}
+
+// Open Cart
+function openCart() {
+  updateCartDisplay();
+  cartModal.style.display = "block";
+  document.body.style.overflow = "hidden";
+}
+
+// Close Cart
+function closeCart() {
+  cartModal.style.display = "none";
+  document.body.style.overflow = "auto";
+}
+
+// Update Cart Display
+function updateCartDisplay() {
+  cartItems.innerHTML = "";
+
+  if (cart.length === 0) {
+    cartItems.innerHTML = '<p class="empty-cart">Your cart is empty.</p>';
+    cartSubtotal.textContent = "$0.00";
+    cartTotal.textContent = "$0.00";
+    return;
+  }
+
+  let subtotal = 0;
+
+  cart.forEach((item) => {
+    const itemTotal = item.price * item.quantity;
+    subtotal += itemTotal;
+
+    const cartItem = document.createElement("div");
+    cartItem.classList.add("cart-item");
+
+    cartItem.innerHTML = `
+            <div class="cart-item-image">
+                <img src="${item.image}" alt="${item.name}">
+            </div>
+            <div class="cart-item-details">
+                <div class="cart-item-title">${item.name}</div>
+                <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                <div class="cart-item-quantity">
+                    <button class="quantity-btn decrease" data-id="${
+                      item.id
+                    }">-</button>
+                    <span>${item.quantity}</span>
+                    <button class="quantity-btn increase" data-id="${
+                      item.id
+                    }">+</button>
+                </div>
+            </div>
+            <button class="cart-item-remove" data-id="${
+              item.id
+            }">Remove</button>
+        `;
+
+    cartItems.appendChild(cartItem);
+  });
+
+  // Add event listeners for quantity buttons and remove buttons
+  document.querySelectorAll(".quantity-btn.decrease").forEach((button) => {
+    button.addEventListener("click", decreaseQuantity);
+  });
+
+  document.querySelectorAll(".quantity-btn.increase").forEach((button) => {
+    button.addEventListener("click", increaseQuantity);
+  });
+
+  document.querySelectorAll(".cart-item-remove").forEach((button) => {
+    button.addEventListener("click", removeItem);
+  });
+
+  // Update totals
+  const shipping = 5.99;
+  cartSubtotal.textContent = `$${subtotal.toFixed(2)}`;
+  cartTotal.textContent = `$${(subtotal + shipping).toFixed(2)}`;
+} // This closing brace might have been missing
