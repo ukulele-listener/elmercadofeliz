@@ -1,0 +1,182 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShopEasy - Online Marketplace</title>
+    <link rel="stylesheet" href="css\style.css" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="logo">
+          <h1>ShopEasy</h1>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="#" class="active">Home</a></li>
+            <li><a href="#">Categories</a></li>
+            <li><a href="#">Deals</a></li>
+            <li><a href="#">Sell</a></li>
+          </ul>
+        </nav>
+        <div class="search-bar">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Search products..."
+          />
+          <button id="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="cart">
+          <button id="cart-btn">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cart-count">0</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <div class="hero">
+          <div class="hero-content">
+            <h2>Find Everything You Need</h2>
+            <p>Discover amazing products with best deals</p>
+            <button class="btn-primary">Shop Now</button>
+          </div>
+        </div>
+
+        <div class="product-section">
+          <div class="filters">
+            <h3>Filters</h3>
+            <div class="filter-group">
+              <h4>Categories</h4>
+              <div class="filter-options">
+                <label
+                  ><input type="checkbox" data-category="electronics" />
+                  Electronics</label
+                >
+                <label
+                  ><input type="checkbox" data-category="clothing" />
+                  Clothing</label
+                >
+                <label
+                  ><input type="checkbox" data-category="home" /> Home &
+                  Kitchen</label
+                >
+                <label
+                  ><input type="checkbox" data-category="books" /> Books</label
+                >
+              </div>
+            </div>
+            <div class="filter-group">
+              <h4>Price Range</h4>
+              <div class="price-slider">
+                <input
+                  type="range"
+                  id="price-range"
+                  min="0"
+                  max="1000"
+                  step="50"
+                  value="1000"
+                />
+                <div class="price-values">
+                  <span>$0</span>
+                  <span id="price-value">$1000</span>
+                </div>
+              </div>
+            </div>
+            <button id="apply-filters" class="btn-secondary">
+              Apply Filters
+            </button>
+          </div>
+
+          <div class="products-container">
+            <h3>Featured Products</h3>
+            <div id="products-grid" class="products-grid">
+              <!-- Products will be added here dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="cart-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Your Shopping Cart</h3>
+          <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div id="cart-items">
+            <!-- Cart items will be added here dynamically -->
+          </div>
+          <div class="cart-summary">
+            <div class="subtotal">
+              <span>Subtotal:</span>
+              <span id="cart-subtotal">$0.00</span>
+            </div>
+            <div class="shipping">
+              <span>Shipping:</span>
+              <span id="cart-shipping">$5.99</span>
+            </div>
+            <div class="total">
+              <span>Total:</span>
+              <span id="cart-total">$5.99</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="checkout-btn" class="btn-primary">Checkout</button>
+          <button id="continue-shopping" class="btn-secondary">
+            Continue Shopping
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="container">
+        <div class="footer-sections">
+          <div class="footer-section">
+            <h3>ShopEasy</h3>
+            <p>Your one-stop online marketplace for all your shopping needs.</p>
+          </div>
+          <div class="footer-section">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Contact</a></li>
+              <li><a href="#">FAQ</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3>Contact Us</h3>
+            <p>Email: support@shopeasy.com</p>
+            <p>Phone: (123) 456-7890</p>
+          </div>
+          <div class="footer-section">
+            <h3>Follow Us</h3>
+            <div class="social-icons">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="copyright">
+          <p>&copy; 2025 ShopEasy. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/products.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
